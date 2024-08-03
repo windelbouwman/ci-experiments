@@ -1,0 +1,67 @@
+name: Build C++ Library and Application
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-library:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and Install Library
+        run: |
+          mkdir -p HelloLibrary/build
+          cmake -B ${{ github.workspace }}/HelloLibrary/build -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}/HelloLibrary
+          cmake --build ${{ github.workspace }}/HelloLibrary/build
+          cmake --install ${{ github.workspace }}/HelloLibrary/build --prefix ${{ github.workspace }}/HelloLibrary/install
+
+      - name: Upload Library Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: HelloLibrary
+          path: HelloLibrary/install
+
+  build-application:
+    runs-on: ubuntu-latest
+    needs: build-library
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ # Install CMake and a compiler
+
+      - name: Cache CMake
+        uses: actions/cache@v2
+        with:
+          path: ~/.cmake
+          key: cmake-${{ runner.os }}-application-${{ hashFiles('application/CMakeLists.txt') }}
+          restore-keys: |
+            cmake-${{ runner.os }}-application-
+
+      - name: Download Library Build
+        uses: actions/download-artifact@v4
+        with:
+          name: HelloLibrary
+          path: HelloLibrary/install
+
+      - name: Build Application
+        run: |
+          mkdir -p application/build
+          cd application/build
+          cmake .. -DCMAKE_PREFIX_PATH=../../library/install
+          cmake --build .
+
