@@ -20,8 +20,8 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }}/HelloLibrary -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
-          cmake --build -B ${{ github.workspace }}/build
-          cmake --install -B ${{ github.workspace }}/build
+          cmake --build ${{ github.workspace }}/build
+          cmake --install ${{ github.workspace }}/build
 
       - name: Upload Library Build
         uses: actions/upload-artifact@v4
@@ -54,6 +54,6 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }}/HelloApp -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
-          cmake --build -B ${{ github.workspace }}/build
-          cmake --install -B ${{ github.workspace }}/build
+          cmake --build ${{ github.workspace }}/build
+          cmake --install ${{ github.workspace }}/build
 
