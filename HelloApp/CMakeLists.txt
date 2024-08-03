@@ -1,10 +1,10 @@
 
 
-make_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.20)
 
 project(HelloApp VERSION 1.0)
 
-find_package(HelloLibrary REQUIRED PATHS ../library/install)
+find_package(HelloLibrary)
 
 add_executable(HelloApp main.cpp)
 
